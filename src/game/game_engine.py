@@ -47,6 +47,13 @@ class RoundResult:
     predicted_player_gesture: str | None = None
 
 
+@dataclass(frozen=True)
+class PredictionStatistics:
+    correct_predictions: int
+    evaluated_rounds: int
+    accuracy: float | None
+
+
 class GestureProvider(Protocol):
     """The small part of GestureInterface consumed by the game engine."""
 
@@ -148,6 +155,25 @@ class SuitJawaEngine:
     @property
     def results(self) -> tuple[RoundResult, ...]:
         return tuple(self._results)
+
+    @property
+    def prediction_statistics(self) -> PredictionStatistics:
+        evaluated = tuple(
+            result
+            for result in self._results
+            if result.player_gesture in GESTURES
+            and result.predicted_player_gesture in GESTURES
+        )
+        correct = sum(
+            result.predicted_player_gesture == result.player_gesture
+            for result in evaluated
+        )
+        total = len(evaluated)
+        return PredictionStatistics(
+            correct_predictions=correct,
+            evaluated_rounds=total,
+            accuracy=correct / total if total else None,
+        )
 
     @property
     def round_history(self) -> tuple[RoundResult, ...]:
@@ -401,4 +427,9 @@ class SuitJawaEngine:
         return value
 
 
-__all__ = ["SuitJawaEngine", "GameState", "RoundResult"]
+__all__ = [
+    "SuitJawaEngine",
+    "GameState",
+    "RoundResult",
+    "PredictionStatistics",
+]

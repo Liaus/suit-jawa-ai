@@ -190,6 +190,44 @@ class SuitJawaRoundTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "finite"):
             engine.start(now=float("nan"))
 
+    def test_prediction_statistics_exclude_timeouts_and_reset_each_session(self) -> None:
+        engine = self.make_engine(
+            total_rounds=2,
+            stable_seconds=0,
+            gesture_timeout=1,
+            result_seconds=0,
+        )
+        engine.start(now=0)
+        self.advance_to_capture(engine, 0)
+        engine.update(valid_prediction("Gajah"), now=0)
+
+        first_result = engine.last_result
+        if first_result is None:
+            self.fail("Expected the first round to be recorded.")
+        expected_correct = int(
+            first_result.predicted_player_gesture == first_result.player_gesture
+        )
+        self.assertEqual(
+            engine.prediction_statistics.correct_predictions,
+            expected_correct,
+        )
+        self.assertEqual(engine.prediction_statistics.evaluated_rounds, 1)
+
+        engine.update(now=0)
+        self.advance_to_capture(engine, 0)
+        engine.update(GesturePrediction("unknown", 0.0, False, False), now=0)
+        engine.update(now=1)
+        self.assertEqual(engine.prediction_statistics.evaluated_rounds, 1)
+        self.assertAlmostEqual(
+            engine.prediction_statistics.accuracy or 0,
+            expected_correct,
+        )
+
+        engine.update(now=1)
+        engine.start(now=2)
+        self.assertEqual(engine.prediction_statistics.evaluated_rounds, 0)
+        self.assertIsNone(engine.prediction_statistics.accuracy)
+
 
 if __name__ == "__main__":
     unittest.main()

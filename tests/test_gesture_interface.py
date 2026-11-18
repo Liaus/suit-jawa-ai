@@ -70,6 +70,15 @@ class FakeCV2:
         _ = conversion
         return frame
 
+    def imencode(self, extension: str, frame: str) -> tuple[bool, "FakeEncodedImage"]:
+        _ = extension, frame
+        return True, FakeEncodedImage()
+
+
+class FakeEncodedImage:
+    def tobytes(self) -> bytes:
+        return b"jpeg-frame"
+
 
 class FakeHandProcessor:
     def __init__(self, has_hand: bool = True) -> None:
@@ -106,12 +115,14 @@ def make_interface(
     label: str,
     probabilities: list[float],
     has_hand: bool = True,
+    preview_enabled: bool = False,
 ) -> GestureInterface:
     return GestureInterface(
         model=FakeModel(label, probabilities),
         capture=FakeCapture(),
         hand_processor=FakeHandProcessor(has_hand),
         cv2_module=FakeCV2(),
+        preview_enabled=preview_enabled,
     )
 
 
@@ -174,6 +185,19 @@ class GestureInterfaceTests(unittest.TestCase):
 
         with self.assertRaisesRegex(CameraDisconnectedError, "indeks 2"):
             interface.get_prediction()
+
+    @patch("src.vision.gesture_interface.normalize_hand_landmarks", return_value=[0.0] * 63)
+    def test_preview_enabled_caches_the_latest_jpeg_frame(self, normalize) -> None:
+        interface = make_interface(
+            "Gajah",
+            [0.92, 0.03, 0.03, 0.02],
+            preview_enabled=True,
+        )
+
+        interface.get_prediction()
+
+        self.assertEqual(interface.latest_frame_jpeg, b"jpeg-frame")
+        normalize.assert_called_once()
 
     def test_confidence_threshold_must_be_between_zero_and_one(self) -> None:
         with self.assertRaisesRegex(ValueError, "antara 0 dan 1"):

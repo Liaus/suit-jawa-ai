@@ -24,6 +24,10 @@ src/
   vision/
     benchmark_camera.py     Benchmark webcam, MediaPipe, dan FPS
     gesture_interface.py    Prediksi gestur dari webcam
+  Img/
+    Gajah.jpg               Ilustrasi gestur jempol
+    Manusia.jpg             Ilustrasi gestur telunjuk
+    Semut.jpg               Ilustrasi gestur kelingking
   game/
     game_engine.py           FSM permainan
     ai_predictor.py          Prediksi pilihan pemain
@@ -35,6 +39,11 @@ src/
     dataset_audit.py        Audit 11 indikator dan keseimbangan kelas
 record_data.py              Perekam dataset landmark interaktif
 main.py                     Entry point permainan
+kiosk_app.py                Server kiosk Flask lokal
+web/
+  index.html                Antarmuka arena kiosk
+  styles.css                Tema responsif offline
+  app.js                    Sinkronisasi API kiosk
 game_logs.csv               Riwayat ronde lintas sesi
 tests/                      Unit dan integration tests
 requirements.txt             Dependensi runtime
@@ -295,4 +304,35 @@ dan beberapa sesi dapat dijalankan tanpa webcam:
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest tests.test_integration_e2e -v
+```
+
+## Tahap A — Antarmuka Kiosk
+
+Kiosk berjalan lokal melalui Flask pada `127.0.0.1`, tanpa CDN atau layanan
+jaringan. Webcam dibaca sekali oleh `GestureInterface`; preview MJPEG dan
+prediksi dibagikan dari frame yang sama. Gambar preview hanya disimpan sementara
+di memori, sedangkan logger tetap hanya menulis ringkasan ronde anonim.
+
+Pasang dependensi (termasuk Flask) dan jalankan server dari root proyek:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe kiosk_app.py --camera-index 0
+```
+
+Buka `http://127.0.0.1:5000` pada browser kiosk dan tekan `F11` untuk layar
+penuh. Tombol **MULAI BERMAIN** memulai sesi 10 ronde; setelah rekap tampil,
+pilih **MAIN LAGI** untuk memulai sesi anonim baru. Gunakan `--model`,
+`--log-file`, atau `--port` bila perlu mengganti lokasi model/log atau port.
+Server hanya bind ke loopback `127.0.0.1`, jadi tidak dibuka ke jaringan lokal.
+
+Kiosk mengambil palet navy, ungu, dan cyan dari thumbnail desain Figma serta
+memakai ilustrasi lokal `Gajah.jpg`, `Manusia.jpg`, dan `Semut.jpg`.
+Akurasi AI dihitung per sesi dari ronde dengan gestur pemain valid; ronde
+timeout tidak masuk penyebut.
+
+Jalankan pengujian antarmuka dan API tanpa webcam:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest tests.test_kiosk_app -v
 ```

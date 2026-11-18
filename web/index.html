@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#070a1d">
+    <title>Suit Jawa vs AI — Kiosk</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script defer src="/static/app.js"></script>
+  </head>
+  <body>
+    <div class="screen-frame">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Suit Jawa AI, beranda">
+          <span class="brand-mark" aria-hidden="true">SJ</span>
+          <span class="brand-copy">
+            <strong>SUIT JAWA</strong>
+            <small>INTERACTIVE AI ARENA</small>
+          </span>
+        </a>
+        <div class="topbar-right">
+          <span class="offline-badge"><span></span> OFFLINE MODE</span>
+          <span class="camera-badge" id="camera-status">
+            <span class="status-dot"></span>
+            <span id="camera-status-text">MENYIAPKAN KAMERA</span>
+          </span>
+          <button class="icon-button" id="fullscreen-button" type="button" aria-label="Aktifkan layar penuh">
+            <span aria-hidden="true">⛶</span>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <p class="eyebrow"><span></span> ADU STRATEGI · BACA POLA · KALAHKAN MESIN <span></span></p>
+          <h1 id="page-title">SUIT JAWA <span class="versus-title">VS <b>AI</b></span></h1>
+          <p class="hero-subtitle">TUNJUKKAN GESTURMU. LIHAT APAKAH AI BISA MEMBACA POLAMU.</p>
+        </section>
+
+        <section class="score-strip" aria-label="Skor pertandingan">
+          <div class="round-readout">
+            <span class="micro-label">RONDE</span>
+            <strong><span id="round-current">00</span><i>/</i><span id="round-total">10</span></strong>
+            <span class="progress-track"><span id="round-progress"></span></span>
+          </div>
+          <div class="score-side">
+            <span class="score-name">PEMAIN</span>
+            <strong id="player-score">0</strong>
+          </div>
+          <span class="score-divider" aria-hidden="true">:</span>
+          <div class="score-side score-side--ai">
+            <span class="score-name">AI</span>
+            <strong id="ai-score">0</strong>
+          </div>
+          <div class="accuracy-readout">
+            <span class="micro-label">AKURASI TEBAKAN AI</span>
+            <strong id="accuracy-value">—</strong>
+            <small id="accuracy-fraction">0 tebakan dinilai</small>
+          </div>
+        </section>
+
+        <section class="arena-grid" aria-label="Arena Suit Jawa">
+          <article class="contestant-card player-card">
+            <div class="card-heading">
+              <span class="card-index">01</span>
+              <div>
+                <p class="micro-label">KONTROL GESTUR</p>
+                <h2>PEMAIN</h2>
+              </div>
+              <span class="corner-signal" aria-hidden="true"></span>
+            </div>
+            <div class="camera-window">
+              <img id="camera-feed" alt="Tampilan kamera langsung" hidden>
+              <div class="camera-fallback" id="camera-fallback">
+                <span class="camera-glyph" aria-hidden="true">◎</span>
+                <strong>KAMERA LOKAL</strong>
+                <small>Menunggu koneksi webcam…</small>
+              </div>
+              <span class="feed-tag"><span></span> LIVE · TIDAK DIREKAM</span>
+              <span class="feed-corners" aria-hidden="true"></span>
+            </div>
+            <div class="player-readout">
+              <div>
+                <span class="micro-label">GESTUR TERBACA</span>
+                <strong id="player-gesture">BELUM ADA</strong>
+              </div>
+              <span class="confidence-chip" id="player-confidence">—</span>
+            </div>
+          </article>
+
+          <section class="battle-core" aria-live="polite">
+            <div class="round-chip"><span class="pulse-dot"></span><span id="phase-label">ARENA SIAP</span></div>
+            <div class="versus-orb" aria-hidden="true">
+              <span class="orb-ring orb-ring--outer"></span>
+              <span class="orb-ring orb-ring--inner"></span>
+              <strong>VS</strong>
+            </div>
+            <h2 id="phase-title">Siap bertanding?</h2>
+            <p id="phase-message">Pastikan tangan terlihat jelas di depan kamera.</p>
+            <div class="forecast-box">
+              <span class="micro-label">POLA YANG DIBACA AI</span>
+              <strong id="ai-prediction">MENUNGGU RONDE</strong>
+              <small id="ai-strategy">Prediksi baru tersedia saat ronde dimulai.</small>
+            </div>
+          </section>
+
+          <article class="contestant-card ai-card">
+            <div class="card-heading">
+              <span class="card-index">02</span>
+              <div>
+                <p class="micro-label">PREDIKSI · COUNTER</p>
+                <h2>MESIN AI</h2>
+              </div>
+              <span class="ai-status">LOCAL</span>
+            </div>
+            <div class="ai-display">
+              <div class="ai-scanline" aria-hidden="true"></div>
+              <div class="ai-core" aria-hidden="true"><span>AI</span></div>
+              <p class="micro-label">LANGKAH COUNTER</p>
+              <strong id="ai-counter">MENUNGGU</strong>
+              <div class="ai-hand-frame">
+                <img id="ai-counter-image" alt="" hidden>
+                <span id="ai-counter-placeholder" aria-hidden="true">?</span>
+              </div>
+            </div>
+            <div class="ai-foot">
+              <span class="micro-label">HASIL TERAKHIR</span>
+              <strong id="last-result">BELUM ADA RONDE</strong>
+            </div>
+          </article>
+        </section>
+
+        <section class="gesture-guide" aria-labelledby="guide-title">
+          <div class="guide-heading">
+            <div>
+              <p class="micro-label">KENALI TIGA GESTUR</p>
+              <h2 id="guide-title">PILIHAN SUIT JAWA</h2>
+            </div>
+            <p class="guide-rule">GAJAH MENGALAHKAN ORANG <span>·</span> ORANG MENGALAHKAN SEMUT <span>·</span> SEMUT MENGALAHKAN GAJAH</p>
+          </div>
+          <div class="gesture-cards">
+            <article class="gesture-card">
+              <span class="gesture-number">01</span>
+              <div class="gesture-image"><img src="/images/gajah" alt="Ilustrasi gestur Gajah, jempol"></div>
+              <div class="gesture-copy"><h3>GAJAH</h3><span>JEMPOL</span></div>
+              <small>MENGALAHKAN <b>ORANG</b></small>
+            </article>
+            <article class="gesture-card">
+              <span class="gesture-number">02</span>
+              <div class="gesture-image"><img src="/images/orang" alt="Ilustrasi gestur Orang, telunjuk"></div>
+              <div class="gesture-copy"><h3>ORANG</h3><span>TELUNJUK</span></div>
+              <small>MENGALAHKAN <b>SEMUT</b></small>
+            </article>
+            <article class="gesture-card">
+              <span class="gesture-number">03</span>
+              <div class="gesture-image"><img src="/images/semut" alt="Ilustrasi gestur Semut, kelingking"></div>
+              <div class="gesture-copy"><h3>SEMUT</h3><span>KELINGKING</span></div>
+              <small>MENGALAHKAN <b>GAJAH</b></small>
+            </article>
+          </div>
+        </section>
+
+        <footer class="action-row">
+          <p id="connection-message" role="status">Pastikan tangan terlihat jelas di depan kamera.</p>
+          <button class="start-button" id="start-button" type="button" disabled>
+            <span id="start-button-label">MENYIAPKAN KAMERA</span>
+            <span class="button-arrow" aria-hidden="true">›</span>
+          </button>
+          <span class="fullscreen-hint">LAYAR PENUH <kbd>F11</kbd></span>
+        </footer>
+      </main>
+    </div>
+
+    <div class="recap-backdrop" id="recap" hidden>
+      <section class="recap-panel" role="dialog" aria-modal="true" aria-labelledby="recap-title">
+        <button class="recap-close" id="recap-close" type="button" aria-label="Tutup rekap hasil">×</button>
+        <p class="eyebrow"><span></span> SESI SELESAI <span></span></p>
+        <h2 id="recap-title">HASIL PERTANDINGAN</h2>
+        <div class="recap-score"><strong id="recap-player-score">0</strong><span>:</span><strong id="recap-ai-score">0</strong></div>
+        <p class="recap-score-label">PEMAIN <span>—</span> AI</p>
+        <div class="recap-stats">
+          <div><span class="micro-label">AKURASI TEBAKAN AI</span><strong id="recap-accuracy">—</strong></div>
+          <div><span class="micro-label">TEBAKAN BENAR</span><strong id="recap-correct">0 / 0</strong></div>
+        </div>
+        <div class="round-history">
+          <div class="history-heading"><span>RONDE</span><span>PEMAIN</span><span>AI</span><span>HASIL</span></div>
+          <ol id="round-history-list"></ol>
+        </div>
+        <button class="start-button recap-button" id="replay-button" type="button">
+          <span>MAIN LAGI</span><span class="button-arrow" aria-hidden="true">›</span>
+        </button>
+      </section>
+    </div>
+  </body>
+</html>

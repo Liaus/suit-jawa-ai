@@ -130,6 +130,7 @@ class GestureInterface:
         capture: Any | None = None,
         hand_processor: Any | None = None,
         cv2_module: Any | None = None,
+        preview_enabled: bool = False,
     ) -> None:
         if model is None:
             model, classes, artifact_threshold = _load_model_artifact(model_path)
@@ -159,6 +160,8 @@ class GestureInterface:
         self._capture = capture
         self._hand_processor = hand_processor
         self._cv2 = cv2_module
+        self.preview_enabled = preview_enabled
+        self._latest_frame_jpeg: bytes | None = None
         self._owns_capture = capture is None
         self._owns_hand_processor = hand_processor is None
         self._started = False
@@ -229,6 +232,11 @@ class GestureInterface:
             )
 
         frame = cv2.flip(frame, 1)
+        if self.preview_enabled:
+            encoded, image = cv2.imencode(".jpg", frame)
+            if not encoded:
+                raise RuntimeError("Gagal membuat preview JPEG dari kamera.")
+            self._latest_frame_jpeg = image.tobytes()
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         result = hand_processor.process(rgb_frame)
         hand_landmarks = getattr(result, "multi_hand_landmarks", None)
@@ -269,7 +277,13 @@ class GestureInterface:
                     self._hand_processor = None
                 if self._owns_capture:
                     self._capture = None
+                self._latest_frame_jpeg = None
                 self._started = False
+
+    @property
+    def latest_frame_jpeg(self) -> bytes | None:
+        """Return the most recent JPEG when camera preview is enabled."""
+        return self._latest_frame_jpeg
 
     def __enter__(self) -> GestureInterface:
         self.start()
