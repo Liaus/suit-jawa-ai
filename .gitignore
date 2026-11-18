@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tool and OS artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+.env
+.env.*
+!.env.example
+
+# Local biometric samples and model artifacts
+data/*
+!data/.gitkeep
+models/*
+!models/.gitkeep
+!models/evaluation_fase_1_4.md
+
+# Local game history
+/game_logs.csv
