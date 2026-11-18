@@ -1,31 +1,39 @@
-# Python
+# Python bytecode and caches
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Virtual environments
 .venv/
 venv/
 env/
+ENV/
 
-# Tool and OS artifacts
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.DS_Store
-Thumbs.db
-*.tmp
-*.log
+# Packaging and build output
+build/
+dist/
+*.egg-info/
+
+# Local settings, logs, and temporary files
 .env
 .env.*
 !.env.example
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
 
-# Local biometric samples and model artifacts
-data/*
-!data/.gitkeep
-models/*
-!models/.gitkeep
-!models/evaluation_fase_1_4.md
+# Local biometric samples
+/data/*
+!/data/.gitkeep
+
+# Local model artifacts
+/models/*
+!/models/.gitkeep
+!/models/evaluation_fase_1_4.md
 
 # Local game history
 /game_logs.csv

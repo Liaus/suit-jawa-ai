@@ -76,9 +76,10 @@ dapat menunjuk ke instalasi Python lain yang belum memiliki MediaPipe.
 - [x] Pasang dependensi Python di environment proyek.
 - [x] Jalankan benchmark webcam dan verifikasi izin/perangkat kamera.
 
-Benchmark awal pada 640x480 menghasilkan **20.29 FPS** selama 10 detik.
-Tidak ada tangan terdeteksi pada sesi pengukuran; tampilkan gestur tangan saat
-menguji deteksi, lalu jalankan ulang untuk memperbarui laporan.
+Pengujian webcam fisik terbaru mencatat resolusi 640x480, **23.83 FPS**
+selama 30.34 detik, dan deteksi tangan pada 41 dari 723 frame. Hasil dapat
+berubah sesuai kamera dan beban perangkat; lihat `benchmark_vision.md` untuk
+angka lengkap.
 
 ### Menjalankan benchmark
 

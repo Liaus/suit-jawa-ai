@@ -7,12 +7,16 @@ from datetime import datetime
 from pathlib import Path
 import sys
 import time
-from typing import Any
+from typing import Any, Protocol, cast
 
 from src.utils.system_info import get_system_info
 
 
 DEFAULT_REPORT = Path(__file__).resolve().parents[2] / "benchmark_vision.md"
+
+
+class HandProcessingResult(Protocol):
+    multi_hand_landmarks: list[Any] | None
 
 
 def run_camera_benchmark(
@@ -30,7 +34,7 @@ def run_camera_benchmark(
             "`.\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt`."
         ) from error
     try:
-        import mediapipe as mp
+        from mediapipe.python.solutions import drawing_utils, hands as hands_api
     except ImportError as error:
         raise RuntimeError(
             f"MediaPipe belum tersedia untuk Python yang sedang dipakai "
@@ -53,7 +57,9 @@ def run_camera_benchmark(
     frame_count = 0
     frames_with_hands = 0
     detected_hands = 0
-    hands_api = mp.solutions.hands
+    hand_connections = [
+        (int(start), int(end)) for start, end in hands_api.HAND_CONNECTIONS
+    ]
 
     try:
         with hands_api.Hands(
@@ -70,20 +76,21 @@ def run_camera_benchmark(
                     raise RuntimeError("Gagal membaca frame dari webcam.")
 
                 rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                result = hands.process(rgb_frame)
+                result = cast(HandProcessingResult, hands.process(rgb_frame))
+                hand_landmarks = result.multi_hand_landmarks
                 frame_count += 1
-                hand_count = len(result.multi_hand_landmarks or [])
+                hand_count = len(hand_landmarks or [])
                 if hand_count:
                     frames_with_hands += 1
                     detected_hands += hand_count
 
                 if show_window:
-                    if result.multi_hand_landmarks:
-                        for landmarks in result.multi_hand_landmarks:
-                            mp.solutions.drawing_utils.draw_landmarks(
+                    if hand_landmarks:
+                        for landmarks in hand_landmarks:
+                            drawing_utils.draw_landmarks(
                                 frame,
                                 landmarks,
-                                hands_api.HAND_CONNECTIONS,
+                                hand_connections,
                             )
                     cv2.imshow("Suit Jawa vs AI - Benchmark (tekan Q untuk berhenti)", frame)
                     if cv2.waitKey(1) & 0xFF == ord("q"):
